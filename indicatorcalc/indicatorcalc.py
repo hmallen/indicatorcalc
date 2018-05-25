@@ -19,7 +19,8 @@ class IndicatorCalc:
 
     def calc_aroon(self, data, period_count):
         aroon_values = {'Exception': False, 'Error': False,
-                        'result': {'last': {}, 'current': {}}}
+                        'result': {'last': {'up': None, 'down': None, 'state': None},
+                                   'current': {'up': None, 'down': None, 'state': None}}}
 
         #data_flipped = IndicatorCalc.flip_data(data)
 
@@ -147,21 +148,21 @@ class IndicatorCalc:
 
 
     def calc_rsi(self, data, period_count, price_input='close'):
-        rsi_values = {'Exception': False, 'result': {}}
+        rsi_values = {'Exception': False, 'result': {'data': None, 'current': None, 'state': None}}
 
         try:
             results = RSI(data,
                           timeperiod=period_count,
                           prices=price_input)
 
-            rsi_values['result']['rsi'] = results#[-1]
+            rsi_values['result']['data'] = results#[-1]
 
-            #if rsi_values['result']['rsi'] > 50:
-            if rsi_values['result']['rsi'][-1] > 50:
+            rsi_values['result']['current'] = results[-1]
+
+            if rsi_values['result']['current'] > 50:
                 rsi_state = 'positive'
 
-            #elif rsi_values['result']['rsi'] == 50:
-            elif rsi_values['result']['rsi'][-1] == 50:
+            elif rsi_values['result']['current'] == 50:
                 rsi_state = 'even'
 
             else:
@@ -180,6 +181,8 @@ class IndicatorCalc:
 
 
     def calc_stochrsi(self, data, period_count):
+        stochrsi_values = {'Exception': False, 'result': {'current': None}}
+
         try:
             sliced = data[int(-1 * period_count):]
 
@@ -188,18 +191,23 @@ class IndicatorCalc:
             low = np.min(sliced)
             high = np.max(sliced)
 
-            result = (current - low) / (high - low)
+            stochrsi_values['result']['current'] = (current - low) / (high - low)
 
-            return result
-
-        except Exception:
+        except Exception as e:
             logger.exception('Exception while calculating Stochastic RSI.')
+            logger.exception(e)
 
-            raise
+            stochrsi_values['Exception'] = True
+
+        finally:
+            return stochrsi_values
 
 
     def calc_ema(self, data, period_count_short, period_count_long, price_input='close'):
-        ema_values = {'Exception': False, 'result': {}}
+        ema_values = {'Exception': False,
+                      'result': {'short': {'data': None, 'current': None},
+                                 'long': {'data': None, 'current': None},
+                                 'state': None}}
 
         try:
             ema_inputs = {'short': period_count_short, 'long': period_count_long}
@@ -211,12 +219,16 @@ class IndicatorCalc:
                               timeperiod=period_count,
                               prices=price_input)
 
-                ema_values['result'][ema] = results[-1]
+                ema_values['result'][ema]['data'] = results#[-1]
 
-            if ema_values['result']['short'] > ema_values['result']['long']:
+                ema_values['result'][ema]['current'] = results[-1]
+
+            #if ema_values['result']['short'] > ema_values['result']['long']:
+            if ema_values['result']['short']['current'] > ema_values['result']['long']['current']:
                 ema_state = 'positive'
 
-            elif ema_values['result']['short'] == ema_values['result']['long']:
+            #elif ema_values['result']['short'] == ema_values['result']['long']:
+            elif ema_values['result']['short']['current'] == ema_values['result']['long']['current']:
                 ema_state = 'even'
 
             else:
@@ -235,7 +247,10 @@ class IndicatorCalc:
 
 
     def calc_stoch(self, data, price_input='close'):
-        stoch_values = {'Exception': False, 'result': {}}
+        stoch_values = {'Exception': False, 'result': {'slowk': {'data': None, 'current': None},
+                                                       'slowd': {'data': None, 'current': None},
+                                                       'average': None,
+                                                       'state': None}}
 
         try:
             fastk_period = 14
@@ -248,14 +263,18 @@ class IndicatorCalc:
                                  fastk_period, slowk_period, slowk_matype,
                                  slowd_period, slowd_matype)
 
-            stoch_values['result']['slowk'] = slowk[-1]
-            stoch_values['result']['slowd'] = slowd[-1]
+            stoch_values['result']['slowk']['data'] = slowk
+            stoch_values['result']['slowk']['current'] = slowk[-1]
+
+            stoch_values['result']['slowd']['data'] = slowd
+            stoch_values['result']['slowd']['current'] = slowd[-1]
+
             stoch_values['result']['average'] = (slowk[-1] + slowd[-1]) / 2
 
-            if stoch_values['result']['slowk'] > stoch_values['result']['slowd']:
+            if stoch_values['result']['slowk']['current'] > stoch_values['result']['slowd']['current']:
                 stoch_state = 'positive'
 
-            elif stoch_values['result']['slowk'] == stoch_values['result']['slowd']:
+            elif stoch_values['result']['slowk']['current'] == stoch_values['result']['slowd']['current']:
                 stoch_state = 'even'
 
             else:
