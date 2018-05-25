@@ -1,2 +1,3 @@
 # indicatorcalc
-Centralized, TA-Lib based technical analysis indicator calculation from json market data
+
+Centralized, TA-Lib based technical analysis indicator calculation from json market data.
