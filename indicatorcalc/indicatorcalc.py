@@ -177,6 +177,25 @@ class IndicatorCalc:
             return rsi_values
 
 
+    def calc_stochrsi(self, data, period_count):
+        try:
+            sliced = data[int(-1 * period_count):]
+
+            current = sliced[-1]
+
+            low = np.min(sliced)
+            high = np.max(sliced)
+
+            result = (current - low) / (high - low)
+
+            return result
+
+        except Exception:
+            logger.exception('Exception while calculating Stochastic RSI.')
+
+            raise
+
+
     def calc_ema(self, data, period_count_short, period_count_long, price_input='close'):
         ema_values = {'Exception': False, 'result': {}}
 
