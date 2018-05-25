@@ -154,12 +154,14 @@ class IndicatorCalc:
                           timeperiod=period_count,
                           prices=price_input)
 
-            rsi_values['result']['rsi'] = results[-1]
+            rsi_values['result']['rsi'] = results#[-1]
 
-            if rsi_values['result']['rsi'] > 50:
+            #if rsi_values['result']['rsi'] > 50:
+            if rsi_values['result']['rsi'][-1] > 50:
                 rsi_state = 'positive'
 
-            elif rsi_values['result']['rsi'] == 50:
+            #elif rsi_values['result']['rsi'] == 50:
+            elif rsi_values['result']['rsi'][-1] == 50:
                 rsi_state = 'even'
 
             else:
