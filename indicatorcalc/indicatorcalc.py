@@ -9,7 +9,7 @@ from talib.abstract import EMA, RSI, STOCH
 
 #logging.basicConfig()
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 
 
 class IndicatorCalc:
