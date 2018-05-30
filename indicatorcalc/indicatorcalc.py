@@ -17,6 +17,22 @@ class IndicatorCalc:
         pass
 
 
+    """
+    def flip_data(self, data):
+        data_flipped = {'Exception': False, 'result': None}
+
+        try:
+            pass
+
+        except Exception as e:
+            logger.exception('Exception while flipping data.')
+            logger.exception(e)
+
+        finally:
+            return data_flipped
+    """
+
+
     def calc_aroon(self, data, period_count):
         aroon_values = {'Exception': False, 'Error': False,
                         'result': {'last': {'up': None, 'down': None, 'state': None},
