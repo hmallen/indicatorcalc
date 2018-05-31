@@ -42,6 +42,15 @@ class IndicatorCalc:
 
         try:
             #### DATA PREPARATION ####
+            # Check to see if arrays need to be reversed (timestamp[0] should be most recent)
+            if data['close_time'][0] < data['close_time'][-1]:
+                logger.debug('Reversing data arrays for Aroon calculation.')
+
+                array_data_categories = ['high', 'low', 'close_time']
+
+                for category in array_data_categories:
+                    data[category] = data[category][::-1]
+
             input_array_high = data['high']
             input_array_low = data['low']
             input_array_close_time = data['close_time']
