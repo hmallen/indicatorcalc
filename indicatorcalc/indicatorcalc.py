@@ -42,9 +42,20 @@ class IndicatorCalc:
 
         try:
             #### DATA PREPARATION ####
+            if 'close_time' not in data:
+                #data['close_time'] = []
+                close_times = []
+
+                interval = data['open_time'][1] - data['open_time'][0]
+
+                for x in range(0, len(data['open_time'])):
+                    #data['close_time'].append(data['open_time'][x] + interval)
+                    close_times.append(data['open_time'][x] + interval)
+
+                data['close_time'] = np.array(close_times, dtype='f8')
+
             # Check to see if arrays need to be reversed (timestamp[0] should be most recent)
-            #if data['close_time'][0] < data['close_time'][-1]:
-            if data['open_time'][0] < data['open_time'][-1]:
+            if data['close_time'][0] < data['close_time'][-1]:
                 logger.debug('Reversing data arrays for Aroon calculation.')
 
                 array_data_categories = ['high', 'low', 'close_time']
