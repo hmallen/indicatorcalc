@@ -1,11 +1,11 @@
-import datetime
+lengthimport datetime
 import logging
 import os
 from pprint import pprint
 import sys
 
 import numpy as np
-from talib.abstract import EMA, RSI, STOCH
+from talib.abstract import EMA, MACD, RSI, SMA, STOCH
 
 #logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -17,28 +17,10 @@ class IndicatorCalc:
         pass
 
 
-    """
-    def flip_data(self, data):
-        data_flipped = {'Exception': False, 'result': None}
-
-        try:
-            pass
-
-        except Exception as e:
-            logger.exception('Exception while flipping data.')
-            logger.exception(e)
-
-        finally:
-            return data_flipped
-    """
-
-
-    def calc_aroon(self, data, period_count):
+    def aroon(self, data, length):
         aroon_values = {'Exception': False, 'Error': False,
                         'result': {'last': {'up': None, 'down': None, 'state': None},
                                    'current': {'up': None, 'down': None, 'state': None}}}
-
-        #data_flipped = IndicatorCalc.flip_data(data)
 
         try:
             #### DATA PREPARATION ####
@@ -81,17 +63,17 @@ class IndicatorCalc:
 
                 arron_values['Error'] = True
 
-            elif input_array_high_length < (period_count + 2):
+            elif input_array_high_length < (length + 2):
                 # ERROR (Not enough data)
                 logger.error('Not enough data periods for Aroon calculation.')
 
-                logger.error('Required: ' + str(int(period_count + 2)) + ' / ' +
+                logger.error('Required: ' + str(int(length + 2)) + ' / ' +
                              'Given: ' + str(input_array_high_length))
 
                 aroon_values['Error'] = True
 
-            elif input_array_high_length > (period_count + 2):
-                trim_length = int(input_array_high_length - (period_count + 2))
+            elif input_array_high_length > (length + 2):
+                trim_length = int(input_array_high_length - (length + 2))
                 logger.debug('trim_length: ' + str(trim_length))
 
                 input_data_high = input_array_high[:(input_array_high_length - trim_length)]
@@ -148,17 +130,17 @@ class IndicatorCalc:
                     logger.debug('low_pos: ' + str(low_pos))
 
                     #periods_since_max = high_pos
-                    periods_since_max = period_count - high_pos
+                    periods_since_max = length - high_pos
                     logger.debug('periods_since_max: ' + str(periods_since_max))
                     #periods_since_min = low_pos
-                    periods_since_min = period_count - low_pos
+                    periods_since_min = length - low_pos
                     logger.debug('periods_since_min: ' + str(periods_since_min))
 
-                    #aroon_up = round((((period_count - periods_since_max) / period_count) * 100), 2)
-                    aroon_up = round(((periods_since_max / period_count) * 100), 2)
+                    #aroon_up = round((((length - periods_since_max) / length) * 100), 2)
+                    aroon_up = round(((periods_since_max / length) * 100), 2)
                     logger.debug('aroon_up: ' + str(aroon_up))
-                    #aroon_down = round((((period_count - periods_since_min) / period_count) * 100), 2)
-                    aroon_down = round(((periods_since_min / period_count) * 100), 2)
+                    #aroon_down = round((((length - periods_since_min) / length) * 100), 2)
+                    aroon_down = round(((periods_since_min / length) * 100), 2)
                     logger.debug('aroon_down: ' + str(aroon_down))
 
                     if aroon_up > aroon_down:
@@ -184,7 +166,7 @@ class IndicatorCalc:
             return aroon_values
 
 
-    def calc_rsi(self, data, period_count, price_input='close'):
+    def rsi(self, data, length, price_input='close'):
         rsi_values = {'Exception': False, 'result': {'data': None, 'current': None, 'state': None}}
 
         try:
@@ -217,11 +199,11 @@ class IndicatorCalc:
             return rsi_values
 
 
-    def calc_stochrsi(self, data, period_count):
+    def stochasticrsi(self, data, length):
         stochrsi_values = {'Exception': False, 'result': {'current': None}}
 
         try:
-            sliced = data[int(-1 * period_count):]
+            sliced = data[int(-1 * length):]
 
             current = sliced[-1]
 
@@ -240,20 +222,20 @@ class IndicatorCalc:
             return stochrsi_values
 
 
-    def calc_ema(self, data, period_count_short, period_count_long, price_input='close'):
+    def ema(self, data, length_short, length_long, price_input='close'):
         ema_values = {'Exception': False,
                       'result': {'short': {'data': None, 'current': None},
                                  'long': {'data': None, 'current': None},
                                  'state': None}}
 
         try:
-            ema_inputs = {'short': period_count_short, 'long': period_count_long}
+            ema_inputs = {'short': length_short, 'long': length_long}
 
             for ema in ema_inputs:
-                period_count = ema_inputs[ema]
+                length = ema_inputs[ema]
 
                 results = EMA(data,
-                              timeperiod=period_count,
+                              timeperiod=length,
                               prices=price_input)
 
                 ema_values['result'][ema]['data'] = results#[-1]
@@ -283,35 +265,33 @@ class IndicatorCalc:
             return ema_values
 
 
-    def calc_stoch(self, data, price_input='close'):
-        stoch_values = {'Exception': False, 'result': {'slowk': {'data': None, 'current': None},
-                                                       'slowd': {'data': None, 'current': None},
+    def stochastic(self, data, length=14, smoothk=3, smoothd=3, price_input='close'):
+        stoch_values = {'Exception': False, 'result': {'smoothk': {'data': None, 'current': None},
+                                                       'smoothd': {'data': None, 'current': None},
                                                        'average': None,
                                                        'state': None}}
 
         try:
-            fastk_period = 14
-            slowk_period = 3
-            slowk_matype = 0
-            slowd_period = 3
-            slowd_matype = 0
+            #length = 14
+            #smoothk = 3
+            smoothk_matype = 0
+            #smoothd = 3
+            smoothd_matype = 0
 
-            slowk, slowd = STOCH(data,
-                                 fastk_period, slowk_period, slowk_matype,
-                                 slowd_period, slowd_matype)
+            smoothk, smoothd = STOCH(data, length, smoothk, smoothk_matype, smoothd, smoothd_matype)
 
-            stoch_values['result']['slowk']['data'] = slowk
-            stoch_values['result']['slowk']['current'] = slowk[-1]
+            stoch_values['result']['smoothk']['data'] = smoothk
+            stoch_values['result']['smoothk']['current'] = smoothk[-1]
 
-            stoch_values['result']['slowd']['data'] = slowd
-            stoch_values['result']['slowd']['current'] = slowd[-1]
+            stoch_values['result']['smoothd']['data'] = smoothd
+            stoch_values['result']['smoothd']['current'] = smoothd[-1]
 
-            stoch_values['result']['average'] = (slowk[-1] + slowd[-1]) / 2
+            stoch_values['result']['average'] = (smoothk[-1] + smoothd[-1]) / 2
 
-            if stoch_values['result']['slowk']['current'] > stoch_values['result']['slowd']['current']:
+            if stoch_values['result']['smoothk']['current'] > stoch_values['result']['smoothd']['current']:
                 stoch_state = 'positive'
 
-            elif stoch_values['result']['slowk']['current'] == stoch_values['result']['slowd']['current']:
+            elif stoch_values['result']['smoothk']['current'] == stoch_values['result']['smoothd']['current']:
                 stoch_state = 'even'
 
             else:
@@ -327,6 +307,66 @@ class IndicatorCalc:
 
         finally:
             return stoch_values
+
+
+# ADD NOW
+def sma(self, data, length, price_input='close'):
+    sma_values = {'Exception': False, 'result': {'data': None, 'current': None, 'state': None}}
+
+    try:
+        # uses open prices
+        results = SMA(data, timeperiod=length, price='close')
+
+        sma_values['result']['data'] = results
+
+        sma_values['result']['current'] = results[-1]
+
+        if sma_values['result']['current'] > 50:
+            sma_state = 'positive'
+
+        elif sma_values['result']['current'] == 50:
+            sma_state = 'even'
+
+        else:
+            sma_state = 'negative'
+
+        sma_values['result']['state'] = sma_state
+
+    except Exception as e:
+        logger.exception('Exception while calculating SMA.')
+        logger.exception(e)
+
+    finally:
+        return sma_values
+
+
+def macd(self):
+    macd_values = {'Exception': False}
+
+    try:
+        macd, macdsignal, macdhist = MACD(close, fastperiod=12, slowperiod=26, signalperiod=9)
+
+    except Exception as e:
+        logger.exception('Exception while calculating MACD.')
+        logger.exception(e)
+
+        macd_values['Exception'] = True
+
+    finally:
+        return macd_values
+
+
+# ADD LATER
+def bollinger_bands(self):
+    pass
+
+
+def fibonacci_levels(self):
+    pass
+
+
+def ichimoku_cloud(self):
+    pass
 
 
 if __name__ == '__main__':

@@ -17,28 +17,10 @@ class IndicatorCalc:
         pass
 
 
-    """
-    def flip_data(self, data):
-        data_flipped = {'Exception': False, 'result': None}
-
-        try:
-            pass
-
-        except Exception as e:
-            logger.exception('Exception while flipping data.')
-            logger.exception(e)
-
-        finally:
-            return data_flipped
-    """
-
-
     def calc_aroon(self, data, period_count):
         aroon_values = {'Exception': False, 'Error': False,
                         'result': {'last': {'up': None, 'down': None, 'state': None},
                                    'current': {'up': None, 'down': None, 'state': None}}}
-
-        #data_flipped = IndicatorCalc.flip_data(data)
 
         try:
             #### DATA PREPARATION ####
@@ -327,6 +309,28 @@ class IndicatorCalc:
 
         finally:
             return stoch_values
+
+
+# ADD NOW
+def calc_sma(self):
+    pass
+
+
+def calc_macd(self):
+    pass
+
+
+# ADD LATER
+def calc_bollinger_bands(self):
+    pass
+
+
+def calc_fibonacci_levels(self):
+    pass
+
+
+def calc_ichimoku_cloud(self):
+    pass
 
 
 if __name__ == '__main__':
