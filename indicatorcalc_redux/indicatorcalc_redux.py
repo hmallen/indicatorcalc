@@ -307,72 +307,72 @@ class IndicatorCalc:
             return stoch_values
 
 
-# ADD NOW
-def sma(self, data, length, price_input='close'):
-    sma_values = {'Exception': False, 'result': {'data': None, 'current': None, 'state': None}}
+    # ADD NOW
+    def sma(self, data, length, price_input='close'):
+        sma_values = {'Exception': False, 'result': {'data': None, 'current': None, 'state': None}}
 
-    try:
-        # uses open prices
-        results = SMA(data, timeperiod=length, price='close')
+        try:
+            # uses open prices
+            results = SMA(data, timeperiod=length, price='close')
 
-        sma_values['result']['data'] = results
+            sma_values['result']['data'] = results
 
-        sma_values['result']['current'] = results[-1]
+            sma_values['result']['current'] = results[-1]
 
-        if sma_values['result']['current'] > 50:
-            sma_state = 'positive'
+            if sma_values['result']['current'] > 50:
+                sma_state = 'positive'
 
-        elif sma_values['result']['current'] == 50:
-            sma_state = 'even'
+            elif sma_values['result']['current'] == 50:
+                sma_state = 'even'
 
-        else:
-            sma_state = 'negative'
+            else:
+                sma_state = 'negative'
 
-        sma_values['result']['state'] = sma_state
+            sma_values['result']['state'] = sma_state
 
-    except Exception as e:
-        logger.exception('Exception while calculating SMA.')
-        logger.exception(e)
+        except Exception as e:
+            logger.exception('Exception while calculating SMA.')
+            logger.exception(e)
 
-    finally:
-        return sma_values
-
-
-def macd(self, data, length_fast=12, length_slow=26, length_signal=9, price_input='close'):
-    macd_values = {'Exception': False, 'result': {'data': data,
-                                                  'macd': None,
-                                                  'signal': None,
-                                                  'histogram': None}}
-
-    try:
-        macd, signal, histogram = MACD(data, fastperiod=length_fast, slowperiod=length_slow,
-                                       signalperiod=length_signal, price=price_input)
-
-        macd_values['result']['macd'] = macd
-        macd_values['result']['signal'] = signal
-        macd_values['result']['histogram'] = histogram
-
-    except Exception as e:
-        logger.exception('Exception while calculating MACD.')
-        logger.exception(e)
-
-        macd_values['Exception'] = True
-
-    finally:
-        return macd_values
+        finally:
+            return sma_values
 
 
-# ADD LATER
-def bollinger_bands(self):
-    pass
+    def macd(self, data, length_fast=12, length_slow=26, length_signal=9, price_input='close'):
+        macd_values = {'Exception': False, 'result': {'data': data,
+                                                      'macd': None,
+                                                      'signal': None,
+                                                      'histogram': None}}
+
+        try:
+            macd, signal, histogram = MACD(data, fastperiod=length_fast, slowperiod=length_slow,
+                                           signalperiod=length_signal, price=price_input)
+
+            macd_values['result']['macd'] = macd
+            macd_values['result']['signal'] = signal
+            macd_values['result']['histogram'] = histogram
+
+        except Exception as e:
+            logger.exception('Exception while calculating MACD.')
+            logger.exception(e)
+
+            macd_values['Exception'] = True
+
+        finally:
+            return macd_values
 
 
-def fibonacci_levels(self):
-    pass
+    # ADD LATER
+    def bollinger_bands(self):
+        pass
 
 
-def ichimoku_cloud(self):
-    pass
+    def fibonacci_levels(self):
+        pass
+
+
+    def ichimoku_cloud(self):
+        pass
 
 
 if __name__ == '__main__':
