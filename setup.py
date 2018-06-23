@@ -5,12 +5,13 @@ with open('README.md', 'r') as fh:
 
 setup(
     name='indicatorcalc',
-    version='0.1a10',
+    version='0.1a11',
     author='Hunter M. Allen',
     author_email='allenhm@gmail.com',
     license='MIT',
     #packages=find_packages(),
-    packages=['indicatorcalc'],
+    packages=['indicatorcalc',
+              'indicatorcalc_redux'],
     #scripts=['bin/heartbeatmonitor.py'],
     install_requires=['numpy>=1.14.3',
                       'TA-Lib>=0.4.17'],
