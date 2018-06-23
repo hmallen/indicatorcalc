@@ -234,9 +234,7 @@ class IndicatorCalc:
             for ema in ema_inputs:
                 length = ema_inputs[ema]
 
-                results = EMA(data,
-                              timeperiod=length,
-                              prices=price_input)
+                results = EMA(data, timeperiod=length, prices=price_input)
 
                 ema_values['result'][ema]['data'] = results#[-1]
 
@@ -340,11 +338,19 @@ def sma(self, data, length, price_input='close'):
         return sma_values
 
 
-def macd(self):
-    macd_values = {'Exception': False}
+def macd(self, data, length_fast=12, length_slow=26, length_signal=9, price_input='close'):
+    macd_values = {'Exception': False, 'result': {'data': data,
+                                                  'macd': None,
+                                                  'signal': None,
+                                                  'histogram': None}}
 
     try:
-        macd, macdsignal, macdhist = MACD(close, fastperiod=12, slowperiod=26, signalperiod=9)
+        macd, signal, histogram = MACD(data, fastperiod=length_fast, slowperiod=length_slow,
+                                       signalperiod=length_signal, price=price_input)
+
+        macd_values['result']['macd'] = macd
+        macd_values['result']['signal'] = signal
+        macd_values['result']['histogram'] = histogram
 
     except Exception as e:
         logger.exception('Exception while calculating MACD.')
