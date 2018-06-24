@@ -197,11 +197,12 @@ class IndicatorCalc:
             return rsi_values
 
 
-    def stochasticrsi(self, data, length):
+    def stochasticrsi(self, data, length, price_input='close'):
         stochrsi_values = {'Exception': False, 'result': {'current': None}}
 
         try:
-            sliced = data[int(-1 * length):]
+            #sliced = data[int(-1 * length):]
+            sliced = data[price_input][int(-1 * length):]
 
             current = sliced[-1]
 
