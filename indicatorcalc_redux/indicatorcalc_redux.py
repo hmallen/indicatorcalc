@@ -339,18 +339,20 @@ class IndicatorCalc:
 
 
     def macd(self, data, length_fast=12, length_slow=26, length_signal=9, price_input='close'):
-        macd_values = {'Exception': False, 'result': {'data': data,
-                                                      'macd': None,
-                                                      'signal': None,
-                                                      'histogram': None}}
+        macd_values = {'Exception': False, 'result': {'macd': {'data': None, 'current': None},
+                                                      'signal': {'data': None, 'current': None},
+                                                      'histogram': {'data': None, 'current': None}}}
 
         try:
             macd, signal, histogram = MACD(data, fastperiod=length_fast, slowperiod=length_slow,
                                            signalperiod=length_signal, price=price_input)
 
-            macd_values['result']['macd'] = macd
-            macd_values['result']['signal'] = signal
-            macd_values['result']['histogram'] = histogram
+            macd_values['result']['macd']['data'] = macd
+            macd_values['result']['macd']['current'] = macd[-1]
+            macd_values['result']['signal']['data'] = signal
+            macd_values['result']['signal']['current'] = signal[-1]
+            macd_values['result']['histogram']['data'] = histogram
+            macd_values['result']['histogram']['current'] = histogram[-1]
 
         except Exception as e:
             logger.exception('Exception while calculating MACD.')
