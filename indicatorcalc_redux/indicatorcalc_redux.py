@@ -170,11 +170,9 @@ class IndicatorCalc:
         rsi_values = {'Exception': False, 'result': {'data': None, 'current': None, 'state': None}}
 
         try:
-            results = RSI(data,
-                          timeperiod=period_count,
-                          prices=price_input)
+            results = RSI(data, timeperiod=length, prices=price_input)
 
-            rsi_values['result']['data'] = results#[-1]
+            rsi_values['result']['data'] = results
 
             rsi_values['result']['current'] = results[-1]
 
