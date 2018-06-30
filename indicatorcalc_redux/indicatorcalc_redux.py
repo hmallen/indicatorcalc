@@ -5,9 +5,9 @@ from pprint import pprint
 import sys
 
 import numpy as np
-from talib.abstract import EMA, MACD, RSI, SMA, STOCH
+from talib.abstract import BBAND, EMA, MACD, RSI, SMA, STOCH
 
-#logging.basicConfig()
+logging.basicConfig()
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
@@ -363,13 +363,54 @@ class IndicatorCalc:
             return macd_values
 
 
-    # ADD LATER
-    def bollinger_bands(self):
-        pass
+    def volume(self):
+        volume_values = {'Exception': False, 'result': {'volume': None}}
+
+        try:
+            pass
+
+        except Exception as e:
+            logger.exception('Exception while calculating volume.')
+            logger.exception(e)
+
+            volume_values['Exception'] = True
+
+        finally:
+            return volume_values
+
+
+    def bollinger_bands(self, length, nbdevup, nbdevdown):
+        bollinger_bands_values = {'Exception': False, 'result': {'upper': None, 'middle': None, 'lower': None}}
+
+        try:
+            bollinger_bands_vlues['upper'],
+            bollinger_bands_vlues['middle'],
+            bollinger_bands_vlues['lower'] = BBANDS(close, timeperiod=length, nbdevup=nbdevup, nbdevdn=nbdevdown, matype=0)
+
+        except Exception as e:
+            logger.exception('Exception while calculating Bollinger bands.')
+            logger.exception(e)
+
+            bollinger_band_values['Exception'] = True
+
+        finally:
+            return bollinger_bands_values
 
 
     def fibonacci_levels(self):
-        pass
+        fibonacci_values = {'Exception': False, 'result': {}}
+
+        try:
+            pass
+
+        except Exception as e:
+            logger.exception('Exception while calculating Fibonacci levels.')
+            logger.exception(e)
+
+            fibonacci_values['Exception'] = True
+
+        finally:
+            return fibonacci_values
 
 
     def ichimoku_cloud(self):
