@@ -346,8 +346,8 @@ class IndicatorCalc:
 
     def macd(self, data, length_fast=12, length_slow=26, length_signal=9, price_input='close'):
         macd_values = {'success': True, 'result': {'macd': {'data': None, 'current': None},
-                                                            'signal': {'data': None, 'current': None},
-                                                            'histogram': {'data': None, 'current': None}}}
+                                                   'signal': {'data': None, 'current': None},
+                                                   'histogram': {'data': None, 'current': None}}}
 
         try:
             macd, signal, histogram = MACD(data, fastperiod=length_fast, slowperiod=length_slow,
@@ -355,8 +355,10 @@ class IndicatorCalc:
 
             macd_values['result']['macd']['data'] = macd
             macd_values['result']['macd']['current'] = macd[-1]
+
             macd_values['result']['signal']['data'] = signal
             macd_values['result']['signal']['current'] = signal[-1]
+
             macd_values['result']['histogram']['data'] = histogram
             macd_values['result']['histogram']['current'] = histogram[-1]
 
@@ -393,7 +395,9 @@ class IndicatorCalc:
 
 
     def bollinger_bands(self, data, length, nbdevup, nbdevdown=None, price_input='close'):
-        bollinger_bands_values = {'success': True, 'result': {'upper': None, 'middle': None, 'lower': None}}
+        bollinger_bands_values = {'success': True, 'result': {'upper': {'data': None, 'current': None},
+                                                              'middle': {'data': None, 'current': None},
+                                                              'lower': {'data': None, 'current': None}}}
 
         try:
             if nbdevdown == None:
@@ -405,15 +409,20 @@ class IndicatorCalc:
             logger.debug('middle[-1]: ' + str(middle[-1]))
             logger.debug('lower[-1]: ' + str(lower[-1]))
 
-            bollinger_bands_values['result']['upper'] = upper
-            bollinger_bands_values['result']['middle'] = middle
-            bollinger_bands_values['result']['lower'] = lower
+            bollinger_bands_values['result']['upper']['data'] = upper
+            bollinger_bands_values['result']['upper']['current'] = upper[-1]
+
+            bollinger_bands_values['result']['middle']['data'] = middle
+            bollinger_bands_values['result']['middle']['current'] = middle[-1]
+
+            bollinger_bands_values['result']['lower']['data'] = lower
+            bollinger_bands_values['result']['lower']['current'] = lower[-1]
 
         except Exception as e:
             logger.exception('Exception while calculating Bollinger bands.')
             logger.exception(e)
 
-            bollinger_band_values['Exception'] = True
+            bollinger_band_values['success'] = False
 
         finally:
             return bollinger_bands_values
@@ -429,14 +438,26 @@ class IndicatorCalc:
             logger.exception('Exception while calculating Fibonacci levels.')
             logger.exception(e)
 
-            fibonacci_values['Exception'] = True
+            fibonacci_values['success'] = False
 
         finally:
             return fibonacci_values
 
 
     def ichimoku_cloud(self):
-        pass
+        ichimoku_values = {'success': True, 'result': {}}
+
+        try:
+            pass
+
+        except Exception as e:
+            logger.exception('Exception while calculating Ichimoku cloud.')
+            logger.exception(e)
+
+            ichimoku_values['success'] = False
+
+        finally:
+            return ichimoku_values
 
 
 if __name__ == '__main__':
