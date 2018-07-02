@@ -221,7 +221,7 @@ class IndicatorCalc:
             return stochrsi_values
 
 
-    def ema(self, data, length_short, length_long, price_input='close'):
+    def ema(self, data, length_short, length_long=None, price_input='close'):
         ema_values = {'Exception': False,
                       'result': {'short': {'data': None, 'current': None},
                                  'long': {'data': None, 'current': None},
@@ -231,26 +231,26 @@ class IndicatorCalc:
             ema_inputs = {'short': length_short, 'long': length_long}
 
             for ema in ema_inputs:
-                length = ema_inputs[ema]
+                if ema_inputs[ema] != None:
+                    length = ema_inputs[ema]
 
-                results = EMA(data, timeperiod=length, prices=price_input)
+                    results = EMA(data, timeperiod=length, prices=price_input)
 
-                ema_values['result'][ema]['data'] = results#[-1]
+                    ema_values['result'][ema]['data'] = results
 
-                ema_values['result'][ema]['current'] = results[-1]
+                    ema_values['result'][ema]['current'] = results[-1]
 
-            #if ema_values['result']['short'] > ema_values['result']['long']:
-            if ema_values['result']['short']['current'] > ema_values['result']['long']['current']:
-                ema_state = 'positive'
+            if length_long != None:
+                if ema_values['result']['short']['current'] > ema_values['result']['long']['current']:
+                    ema_state = 'positive'
 
-            #elif ema_values['result']['short'] == ema_values['result']['long']:
-            elif ema_values['result']['short']['current'] == ema_values['result']['long']['current']:
-                ema_state = 'even'
+                elif ema_values['result']['short']['current'] == ema_values['result']['long']['current']:
+                    ema_state = 'even'
 
-            else:
-                ema_state = 'negative'
+                else:
+                    ema_state = 'negative'
 
-            ema_values['result']['state'] = ema_state
+                ema_values['result']['state'] = ema_state
 
         except Exception as e:
             logger.exception('Exception while calculating EMA.')
@@ -306,12 +306,11 @@ class IndicatorCalc:
             return stoch_values
 
 
-    # ADD NOW
     def sma(self, data, length, price_input='close'):
         sma_values = {'Exception': False, 'result': {'data': None, 'current': None, 'state': None}}
 
         try:
-            # uses open prices
+            # uses open prices?
             results = SMA(data, timeperiod=length, price='close')
 
             sma_values['result']['data'] = results
@@ -363,11 +362,17 @@ class IndicatorCalc:
             return macd_values
 
 
-    def volume(self):
-        volume_values = {'Exception': False, 'result': {'volume': None}}
+    def volume(self, data, threshold):
+        volume_values = {'success': True, 'result': {'volume': None, 'reached': None}}
 
         try:
-            pass
+            volume_values['result']['volume'] = data['volume']
+
+            if volume_values['result']['volume'] >= threshold:
+                volume_values['result']['reached'] = True
+
+            else:
+                volume_values['result']['reached'] = False
 
         except Exception as e:
             logger.exception('Exception while calculating volume.')
@@ -379,13 +384,16 @@ class IndicatorCalc:
             return volume_values
 
 
-    def bollinger_bands(self, length, nbdevup, nbdevdown):
-        bollinger_bands_values = {'Exception': False, 'result': {'upper': None, 'middle': None, 'lower': None}}
+    def bollinger_bands(self, data, length, nbdevup, nbdevdown=None, price_input='close'):
+        bollinger_bands_values = {'success': True, 'result': {'upper': None, 'middle': None, 'lower': None}}
 
         try:
+            if nbdevdown == None:
+                nbdevdown = nbdevup
+
             bollinger_bands_vlues['upper'],
             bollinger_bands_vlues['middle'],
-            bollinger_bands_vlues['lower'] = BBANDS(close, timeperiod=length, nbdevup=nbdevup, nbdevdn=nbdevdown, matype=0)
+            bollinger_bands_vlues['lower'] = BBANDS(data[price_input], timeperiod=length, nbdevup=nbdevup, nbdevdn=nbdevdown, matype=0)
 
         except Exception as e:
             logger.exception('Exception while calculating Bollinger bands.')
@@ -398,7 +406,7 @@ class IndicatorCalc:
 
 
     def fibonacci_levels(self):
-        fibonacci_values = {'Exception': False, 'result': {}}
+        fibonacci_values = {'success': True, 'result': {}}
 
         try:
             pass
