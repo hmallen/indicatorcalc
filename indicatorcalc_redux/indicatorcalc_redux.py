@@ -399,7 +399,7 @@ class IndicatorCalc:
             if nbdevdown == None:
                 nbdevdown = nbdevup
 
-            upper, middle, lower = BBANDS(data[price_input], timeperiod=length, nbdevup=nbdevup, nbdevdn=nbdevdown, matype=0)
+            upper, middle, lower = BBANDS(data, timeperiod=length, nbdevup=nbdevup, nbdevdn=nbdevdown, matype=0, prices=price_input)
 
             logger.debug('upper[-1]: ' + str(upper[-1]))
             logger.debug('middle[-1]: ' + str(middle[-1]))
