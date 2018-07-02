@@ -7,7 +7,7 @@ import sys
 import numpy as np
 from talib.abstract import BBANDS, EMA, MACD, RSI, SMA, STOCH
 
-logging.basicConfig()
+#logging.basicConfig()
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
@@ -366,7 +366,7 @@ class IndicatorCalc:
         volume_values = {'success': True, 'result': {'volume': None, 'reached': None}}
 
         try:
-            volume_values['result']['volume'] = data['volume']
+            volume_values['result']['volume'] = data['volume'][-1]
 
             if volume_values['result']['volume'] >= threshold:
                 volume_values['result']['reached'] = True
@@ -391,9 +391,9 @@ class IndicatorCalc:
             if nbdevdown == None:
                 nbdevdown = nbdevup
 
-            bollinger_bands_vlues['upper'],
-            bollinger_bands_vlues['middle'],
-            bollinger_bands_vlues['lower'] = BBANDS(data[price_input], timeperiod=length, nbdevup=nbdevup, nbdevdn=nbdevdown, matype=0)
+            bollinger_bands_values['upper'],
+            bollinger_bands_values['middle'],
+            bollinger_bands_values['lower'] = BBANDS(data[price_input], timeperiod=length, nbdevup=nbdevup, nbdevdn=nbdevdown, matype=0)
 
         except Exception as e:
             logger.exception('Exception while calculating Bollinger bands.')
