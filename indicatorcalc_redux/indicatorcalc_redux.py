@@ -202,7 +202,7 @@ class IndicatorCalc:
 
 
     def stochasticrsi(self, data, length, price_input='close'):
-        stochrsi_values = {'success': True, 'result': {'current': None}}
+        stochrsi_values = {'success': True, 'result': {'current': None, 'state': None}}
 
         try:
             #sliced = data[int(-1 * length):]
@@ -214,6 +214,17 @@ class IndicatorCalc:
             high = np.max(sliced)
 
             stochrsi_values['result']['current'] = (current - low) / (high - low)
+
+            if stochrsi_values['result']['current'] > 50:
+                stochrsi_state = 'positive'
+
+            elif stochrsi_values['result']['current'] == 50:
+                stochrsi_state = 'even'
+
+            else:
+                stochrsi_state = 'negative'
+
+            stochrsi_values['result']['state'] = stochrsi_state
 
         except Exception as e:
             logger.exception('Exception while calculating Stochastic RSI.')
@@ -388,7 +399,7 @@ class IndicatorCalc:
             logger.exception('Exception while calculating volume.')
             logger.exception(e)
 
-            volume_values['Exception'] = True
+            volume_values['success'] = False
 
         finally:
             return volume_values
