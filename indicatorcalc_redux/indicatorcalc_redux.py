@@ -399,9 +399,15 @@ class IndicatorCalc:
             if nbdevdown == None:
                 nbdevdown = nbdevup
 
-            bollinger_bands_values['result']['upper'],
-            bollinger_bands_values['result']['middle'],
-            bollinger_bands_values['result']['lower'] = BBANDS(data[price_input], timeperiod=length, nbdevup=nbdevup, nbdevdn=nbdevdown, matype=0)
+            upper, middle, lower = BBANDS(data[price_input], timeperiod=length, nbdevup=nbdevup, nbdevdn=nbdevdown, matype=0)
+
+            logger.debug('upper[-1]: ' + str(upper[-1]))
+            logger.debug('middle[-1]: ' + str(middle[-1]))
+            logger.debug('lower[-1]: ' + str(lower[-1]))
+
+            bollinger_bands_values['result']['upper'] = upper
+            bollinger_bands_values['result']['middle'] = middle
+            bollinger_bands_values['result']['lower'] = lower
 
         except Exception as e:
             logger.exception('Exception while calculating Bollinger bands.')
