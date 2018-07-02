@@ -5,7 +5,7 @@ from pprint import pprint
 import sys
 
 import numpy as np
-from talib.abstract import BBAND, EMA, MACD, RSI, SMA, STOCH
+from talib.abstract import BBANDS, EMA, MACD, RSI, SMA, STOCH
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
