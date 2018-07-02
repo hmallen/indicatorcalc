@@ -18,7 +18,7 @@ class IndicatorCalc:
 
 
     def aroon(self, data, length):
-        aroon_values = {'Exception': False, 'Error': False,
+        aroon_values = {'success': True,
                         'result': {'last': {'up': None, 'down': None, 'state': None},
                                    'current': {'up': None, 'down': None, 'state': None}}}
 
@@ -61,7 +61,8 @@ class IndicatorCalc:
             if input_array_high_length != input_array_low_length:
                 logger.error('Input data sets must have the same length.')
 
-                arron_values['Error'] = True
+                #aroon_values['Error'] = True
+                aroon_values['success'] = False
 
             elif input_array_high_length < (length + 2):
                 # ERROR (Not enough data)
@@ -70,7 +71,8 @@ class IndicatorCalc:
                 logger.error('Required: ' + str(int(length + 2)) + ' / ' +
                              'Given: ' + str(input_array_high_length))
 
-                aroon_values['Error'] = True
+                #aroon_values['Error'] = True
+                aroon_values['success'] = False
 
             elif input_array_high_length > (length + 2):
                 trim_length = int(input_array_high_length - (length + 2))
@@ -90,7 +92,8 @@ class IndicatorCalc:
                 input_data_low = input_array_low
                 input_data_close_time = input_array_close_time
 
-            if aroon_values['Error'] == True:
+            #if aroon_values['Error'] == True:
+            if aroon_values['success'] == False:
                 logger.error('Error occurred while prepping Aroon data.')
 
             else:
@@ -160,14 +163,15 @@ class IndicatorCalc:
             logger.exception('Exception while calculating Aroon.')
             logger.exception(e)
 
-            aroon_values['Exception'] = True
+            #aroon_values['Exception'] = True
+            aroon_values['success'] = False
 
         finally:
             return aroon_values
 
 
     def rsi(self, data, length, price_input='close'):
-        rsi_values = {'Exception': False, 'result': {'data': None, 'current': None, 'state': None}}
+        rsi_values = {'success': True, 'result': {'data': None, 'current': None, 'state': None}}
 
         try:
             results = RSI(data, timeperiod=length, prices=price_input)
@@ -191,14 +195,14 @@ class IndicatorCalc:
             logger.exception('Exception while calculating RSI.')
             logger.exception(e)
 
-            rsi_values['Exception'] = True
+            rsi_values['success'] = False
 
         finally:
             return rsi_values
 
 
     def stochasticrsi(self, data, length, price_input='close'):
-        stochrsi_values = {'Exception': False, 'result': {'current': None}}
+        stochrsi_values = {'success': True, 'result': {'current': None}}
 
         try:
             #sliced = data[int(-1 * length):]
@@ -215,14 +219,14 @@ class IndicatorCalc:
             logger.exception('Exception while calculating Stochastic RSI.')
             logger.exception(e)
 
-            stochrsi_values['Exception'] = True
+            stochrsi_values['success'] = False
 
         finally:
             return stochrsi_values
 
 
     def ema(self, data, length_short, length_long=None, price_input='close'):
-        ema_values = {'Exception': False,
+        ema_values = {'success': True,
                       'result': {'short': {'data': None, 'current': None},
                                  'long': {'data': None, 'current': None},
                                  'state': None}}
@@ -256,17 +260,17 @@ class IndicatorCalc:
             logger.exception('Exception while calculating EMA.')
             logger.exception(e)
 
-            ema_values['Exception'] = True
+            ema_values['success'] = False
 
         finally:
             return ema_values
 
 
     def stochastic(self, data, length=14, smoothk=3, smoothd=3, price_input='close'):
-        stoch_values = {'Exception': False, 'result': {'smoothk': {'data': None, 'current': None},
-                                                       'smoothd': {'data': None, 'current': None},
-                                                       'average': None,
-                                                       'state': None}}
+        stoch_values = {'success': True, 'result': {'smoothk': {'data': None, 'current': None},
+                                                    'smoothd': {'data': None, 'current': None},
+                                                    'average': None,
+                                                    'state': None}}
 
         try:
             #length = 14
@@ -300,14 +304,14 @@ class IndicatorCalc:
             logger.exception('Exception while calculating stochastic.')
             logger.exception(e)
 
-            stoch_values['Exception'] = True
+            stoch_values['success'] = False
 
         finally:
             return stoch_values
 
 
     def sma(self, data, length, price_input='close'):
-        sma_values = {'Exception': False, 'result': {'data': None, 'current': None, 'state': None}}
+        sma_values = {'success': True, 'result': {'data': None, 'current': None}}#, 'state': None}}
 
         try:
             # uses open prices?
@@ -317,6 +321,7 @@ class IndicatorCalc:
 
             sma_values['result']['current'] = results[-1]
 
+            """
             if sma_values['result']['current'] > 50:
                 sma_state = 'positive'
 
@@ -327,19 +332,22 @@ class IndicatorCalc:
                 sma_state = 'negative'
 
             sma_values['result']['state'] = sma_state
+            """
 
         except Exception as e:
             logger.exception('Exception while calculating SMA.')
             logger.exception(e)
+
+            sma_values['success'] = False
 
         finally:
             return sma_values
 
 
     def macd(self, data, length_fast=12, length_slow=26, length_signal=9, price_input='close'):
-        macd_values = {'Exception': False, 'result': {'macd': {'data': None, 'current': None},
-                                                      'signal': {'data': None, 'current': None},
-                                                      'histogram': {'data': None, 'current': None}}}
+        macd_values = {'success': True, 'result': {'macd': {'data': None, 'current': None},
+                                                            'signal': {'data': None, 'current': None},
+                                                            'histogram': {'data': None, 'current': None}}}
 
         try:
             macd, signal, histogram = MACD(data, fastperiod=length_fast, slowperiod=length_slow,
@@ -356,7 +364,7 @@ class IndicatorCalc:
             logger.exception('Exception while calculating MACD.')
             logger.exception(e)
 
-            macd_values['Exception'] = True
+            macd_values['success'] = False
 
         finally:
             return macd_values
@@ -391,9 +399,9 @@ class IndicatorCalc:
             if nbdevdown == None:
                 nbdevdown = nbdevup
 
-            bollinger_bands_values['upper'],
-            bollinger_bands_values['middle'],
-            bollinger_bands_values['lower'] = BBANDS(data[price_input], timeperiod=length, nbdevup=nbdevup, nbdevdn=nbdevdown, matype=0)
+            bollinger_bands_values['result']['upper'],
+            bollinger_bands_values['result']['middle'],
+            bollinger_bands_values['result']['lower'] = BBANDS(data[price_input], timeperiod=length, nbdevup=nbdevup, nbdevdn=nbdevdown, matype=0)
 
         except Exception as e:
             logger.exception('Exception while calculating Bollinger bands.')
