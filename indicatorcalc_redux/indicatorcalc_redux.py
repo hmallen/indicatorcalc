@@ -22,32 +22,34 @@ class IndicatorCalc:
                         'result': {'last': {'up': None, 'down': None, 'state': None},
                                    'current': {'up': None, 'down': None, 'state': None}}}
 
+        data_copy = data.copy()
+
         try:
             #### DATA PREPARATION ####
-            if 'close_time' not in data:
-                #data['close_time'] = []
+            if 'close_time' not in data_copy:
+                #data_copy['close_time'] = []
                 close_times = []
 
-                interval = data['open_time'][1] - data['open_time'][0]
+                interval = data_copy['open_time'][1] - data_copy['open_time'][0]
 
-                for x in range(0, len(data['open_time'])):
-                    #data['close_time'].append(data['open_time'][x] + interval)
-                    close_times.append(data['open_time'][x] + interval)
+                for x in range(0, len(data_copy['open_time'])):
+                    #data_copy['close_time'].append(data_copy['open_time'][x] + interval)
+                    close_times.append(data_copy['open_time'][x] + interval)
 
-                data['close_time'] = np.array(close_times, dtype='f8')
+                data_copy['close_time'] = np.array(close_times, dtype='f8')
 
             # Check to see if arrays need to be reversed (timestamp[0] should be most recent)
-            if data['close_time'][0] < data['close_time'][-1]:
+            if data_copy['close_time'][0] < data_copy['close_time'][-1]:
                 logger.debug('Reversing data arrays for Aroon calculation.')
 
                 array_data_categories = ['high', 'low', 'close_time']
 
                 for category in array_data_categories:
-                    data[category] = data[category][::-1]
+                    data_copy[category] = data_copy[category][::-1]
 
-            input_array_high = data['high']
-            input_array_low = data['low']
-            input_array_close_time = data['close_time']
+            input_array_high = data_copy['high']
+            input_array_low = data_copy['low']
+            input_array_close_time = data_copy['close_time']
 
             input_array_high_length = len(input_array_high)
             logger.debug('input_array_high_length: ' + str(input_array_high_length))
@@ -173,8 +175,10 @@ class IndicatorCalc:
     def rsi(self, data, length, price_input='close'):
         rsi_values = {'success': True, 'result': {'data': None, 'current': None, 'state': None}}
 
+        data_copy = data.copy()
+
         try:
-            results = RSI(data, timeperiod=length, prices=price_input)
+            results = RSI(data_copy, timeperiod=length, prices=price_input)
 
             rsi_values['result']['data'] = results
 
@@ -204,9 +208,11 @@ class IndicatorCalc:
     def stochasticrsi(self, data, length, price_input='close'):
         stochrsi_values = {'success': True, 'result': {'current': None, 'state': None}}
 
+        data_copy = data.copy()
+
         try:
-            #sliced = data[int(-1 * length):]
-            sliced = data[price_input][int(-1 * length):]
+            #sliced = data_copy[int(-1 * length):]
+            sliced = data_copy[price_input][int(-1 * length):]
 
             current = sliced[-1]
 
@@ -215,10 +221,10 @@ class IndicatorCalc:
 
             stochrsi_values['result']['current'] = (current - low) / (high - low)
 
-            if stochrsi_values['result']['current'] > 50:
+            if stochrsi_values['result']['current'] > 0.5:
                 stochrsi_state = 'positive'
 
-            elif stochrsi_values['result']['current'] == 50:
+            elif stochrsi_values['result']['current'] == 0.5:
                 stochrsi_state = 'even'
 
             else:
@@ -242,6 +248,8 @@ class IndicatorCalc:
                                  'long': {'data': None, 'current': None},
                                  'state': None}}
 
+        data_copy = data.copy()
+
         try:
             ema_inputs = {'short': length_short, 'long': length_long}
 
@@ -249,7 +257,7 @@ class IndicatorCalc:
                 if ema_inputs[ema] != None:
                     length = ema_inputs[ema]
 
-                    results = EMA(data, timeperiod=length, prices=price_input)
+                    results = EMA(data_copy, timeperiod=length, prices=price_input)
 
                     ema_values['result'][ema]['data'] = results
 
@@ -277,11 +285,13 @@ class IndicatorCalc:
             return ema_values
 
 
-    def stochastic(self, data, length=14, smoothk=3, smoothd=3, price_input='close'):
+    def stochastic(self, data, length=14, smoothk=3, smoothd=3, price_input=['high', 'low', 'close']):
         stoch_values = {'success': True, 'result': {'smoothk': {'data': None, 'current': None},
                                                     'smoothd': {'data': None, 'current': None},
                                                     'average': None,
                                                     'state': None}}
+
+        data_copy = data.copy()
 
         try:
             #length = 14
@@ -290,7 +300,7 @@ class IndicatorCalc:
             #smoothd = 3
             smoothd_matype = 0
 
-            smoothk, smoothd = STOCH(data, length, smoothk, smoothk_matype, smoothd, smoothd_matype)
+            smoothk, smoothd = STOCH(data_copy, length, smoothk, smoothk_matype, smoothd, smoothd_matype, prices=price_input)
 
             stoch_values['result']['smoothk']['data'] = smoothk
             stoch_values['result']['smoothk']['current'] = smoothk[-1]
@@ -324,9 +334,11 @@ class IndicatorCalc:
     def sma(self, data, length, price_input='close'):
         sma_values = {'success': True, 'result': {'data': None, 'current': None}}#, 'state': None}}
 
+        data_copy = data.copy()
+
         try:
             # uses open prices?
-            results = SMA(data, timeperiod=length, price='close')
+            results = SMA(data_copy, timeperiod=length, price='close')
 
             sma_values['result']['data'] = results
 
@@ -360,8 +372,10 @@ class IndicatorCalc:
                                                    'signal': {'data': None, 'current': None},
                                                    'histogram': {'data': None, 'current': None}}}
 
+        data_copy = data.copy()
+
         try:
-            macd, signal, histogram = MACD(data, fastperiod=length_fast, slowperiod=length_slow,
+            macd, signal, histogram = MACD(data_copy, fastperiod=length_fast, slowperiod=length_slow,
                                            signalperiod=length_signal, price=price_input)
 
             macd_values['result']['macd']['data'] = macd
@@ -386,8 +400,10 @@ class IndicatorCalc:
     def volume(self, data, threshold):
         volume_values = {'success': True, 'result': {'volume': None, 'reached': None}}
 
+        data_copy = data.copy()
+
         try:
-            volume_values['result']['volume'] = data['volume'][-1]
+            volume_values['result']['volume'] = data_copy['volume'][-1]
 
             if volume_values['result']['volume'] >= threshold:
                 volume_values['result']['reached'] = True
@@ -410,11 +426,13 @@ class IndicatorCalc:
                                                               'middle': {'data': None, 'current': None},
                                                               'lower': {'data': None, 'current': None}}}
 
+        data_copy = data.copy()
+
         try:
             if nbdevdown == None:
                 nbdevdown = nbdevup
 
-            upper, middle, lower = BBANDS(data, timeperiod=length, nbdevup=nbdevup, nbdevdn=nbdevdown, matype=0, prices=price_input)
+            upper, middle, lower = BBANDS(data_copy, timeperiod=length, nbdevup=nbdevup, nbdevdn=nbdevdown, matype=0, prices=price_input)
 
             logger.debug('upper[-1]: ' + str(upper[-1]))
             logger.debug('middle[-1]: ' + str(middle[-1]))

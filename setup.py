@@ -5,7 +5,7 @@ with open('README.md', 'r') as fh:
 
 setup(
     name='indicatorcalc',
-    version='0.1a25',
+    version='0.1a26',
     author='Hunter M. Allen',
     author_email='allenhm@gmail.com',
     license='MIT',
