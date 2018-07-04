@@ -457,6 +457,7 @@ class IndicatorCalc:
             return bollinger_bands_values
 
 
+    """
     def fibonacci_levels(self):
         fibonacci_values = {'success': True, 'result': {}}
 
@@ -471,13 +472,74 @@ class IndicatorCalc:
 
         finally:
             return fibonacci_values
+    """
 
 
-    def ichimoku_cloud(self):
-        ichimoku_values = {'success': True, 'result': {}}
+    def ichimoku_cloud(self, data, length_tenkan=9, length_kijun=26, length_senkou=52):
+        ichimoku_values = {'success': True, 'result': {'tenkan': {'data': None, 'current': None},
+                                                       'kijun': {'data': None, 'current': None},
+                                                       'senkou_a': {'data': None, 'current': None},
+                                                       'senkou_b': {'data': None, 'current':None},
+                                                       'chikou': {'data': None, 'current': None}}}
+
+        data_copy = data.copy()
+
+        """
+        Tenkan-sen = (9-day high + 9-day low) / 2
+        Kijun-sen = (26-day high + 26-day low) / 2
+        Senkou Span A = (Tenkan-sen + Kijun-sen) / 2
+        Senkou Span B = (52-day high + 52-day low) / 2
+        Chikou Span = Close plotted 26-days in the past.
+        """
 
         try:
-            pass
+            # Tenkan-sen
+            data_short_low = data_copy['low'][(-1 * length_tenkan):]
+            data_short_high = data_copy['high'][(-1 * length_tenkan):]
+
+            data_short_min = np.min(data_short_low)
+            data_short_max = np.max(data_short_high)
+
+            tenkan_sen = (data_short_min + data_short_max) / 2
+            logger.debug('tenkan_sen: ' + str(tenkan_sen))
+
+            ichimoku_values['result']['tenkan']['current'] = tenkan_sen
+
+            # Kijun-sen
+            data_med_low = data_copy['low'][(-1 * length_kijun):]
+            data_med_high = data_copy['high'][(-1 * length_kijun):]
+
+            data_med_min = np.min(data_med_low)
+            data_med_max = np.max(data_med_high)
+
+            kijun_sen = (data_med_min + data_med_max) / 2
+            logger.debug('kijun_sen: ' + str(kijun_sen))
+
+            ichimoku_values['result']['kijun']['current'] = kijun_sen
+
+            # Senkou Span A
+            senkou_span_a = (tenkan_sen + kijun_sen) / 2
+            logger.debug('senkou_span_a: ' + str(senkou_span_a))
+
+            ichimoku_values['result']['senkou_a']['current'] = senkou_span_a
+
+            # Senkou Span B
+            data_long_low = data_copy['low'][(-1 * length_senkou):]
+            data_long_high = data_copy['high'][(-1 * length_senkou):]
+
+            data_long_min = np.min(data_long_low)
+            data_long_max = np.max(data_long_high)
+
+            senkou_span_b = (data_long_min + data_long_max) / 2
+            logger.debug('senkou_span_b: ' + str(senkou_span_b))
+
+            ichimoku_values['result']['senkou_b']['current'] = senkou_span_b
+
+            # Chikou Span
+            chikou_span = data_copy['close'][-1]
+            logger.debug('chikou_span: ' + str(chikou_span))
+
+            ichimoku_values['result']['chikou']['current'] = chikou_span
 
         except Exception as e:
             logger.exception('Exception while calculating Ichimoku cloud.')
