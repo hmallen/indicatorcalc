@@ -457,12 +457,31 @@ class IndicatorCalc:
             return bollinger_bands_values
 
 
-    """
-    def fibonacci_levels(self):
-        fibonacci_values = {'success': True, 'result': {}}
+    def fibonacci_levels(self, start_price, end_price, level_first=0.236, level_second=0.382, level_third=0.5, level_fourth=0.618):
+        fibonacci_values = {'success': True, 'result': {'price_first': None,
+                                                        'price_second': None,
+                                                        'price_third': None,
+                                                        'price_fourth': None}}
 
         try:
-            pass
+            diff = abs(start_price - end_price)
+
+            diff_first = diff * level_first
+            diff_second = diff * level_second
+            diff_third = diff * level_third
+            diff_fourth = diff * level_fourth
+
+            if start_price > end_price:
+                fibonacci_values['result']['price_first'] = end_price + diff_first
+                fibonacci_values['result']['price_second'] = end_price + diff_second
+                fibonacci_values['result']['price_third'] = end_price + diff_third
+                fibonacci_values['result']['price_fourth'] = end_price + diff_fourth
+
+            else:
+                fibonacci_values['result']['price_first'] = end_price - diff_first
+                fibonacci_values['result']['price_second'] = end_price - diff_second
+                fibonacci_values['result']['price_third'] = end_price - diff_third
+                fibonacci_values['result']['price_fourth'] = end_price - diff_fourth
 
         except Exception as e:
             logger.exception('Exception while calculating Fibonacci levels.')
@@ -472,7 +491,6 @@ class IndicatorCalc:
 
         finally:
             return fibonacci_values
-    """
 
 
     def ichimoku_cloud(self, data, length_tenkan=9, length_kijun=26, length_senkou=52):
