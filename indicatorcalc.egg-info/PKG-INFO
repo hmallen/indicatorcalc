@@ -1,0 +1,18 @@
+Metadata-Version: 2.1
+Name: indicatorcalc
+Version: 0.1a28
+Summary: Centralized, TA-Lib based technical analysis indicator calculation from json market data.
+Home-page: https://github.com/hmallen/indicatorcalc
+Author: Hunter M. Allen
+Author-email: allenhm@gmail.com
+License: MIT
+Description: # indicatorcalc
+        
+        Centralized, TA-Lib based technical analysis indicator calculation from json market data.
+        
+Keywords: indicator,calc
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Description-Content-Type: text/markdown
