@@ -5,7 +5,7 @@ with open('README.md', 'r') as fh:
 
 setup(
     name='indicatorcalc',
-    version='0.1a28',
+    version='0.1a29',
     author='Hunter M. Allen',
     author_email='allenhm@gmail.com',
     license='MIT',
@@ -13,8 +13,8 @@ setup(
     packages=['indicatorcalc',
               'indicatorcalc_redux'],
     #scripts=['bin/heartbeatmonitor.py'],
-    install_requires=['numpy>=1.14.3',
-                      'TA-Lib>=0.4.17'],
+    install_requires=['numpy',
+                      'TA-Lib'],
     description='Centralized, TA-Lib based technical analysis indicator calculation from json market data.',
     long_description=long_description,
     long_description_content_type='text/markdown',

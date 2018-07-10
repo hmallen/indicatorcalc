@@ -13,8 +13,8 @@ logger.setLevel(logging.DEBUG)
 
 
 class IndicatorCalc:
-    def __init__(self):
-        pass
+    def __init__(self, serialize_numpy=False):
+        self.serialize_numpy = serialize_numpy
 
 
     def aroon(self, data, length):
@@ -195,6 +195,9 @@ class IndicatorCalc:
 
             rsi_values['result']['state'] = rsi_state
 
+            if self.serialize_numpy == True:
+                rsi_values['result']['data'] = rsi_values['result']['data'].tolist()
+
         except Exception as e:
             logger.exception('Exception while calculating RSI.')
             logger.exception(e)
@@ -275,6 +278,10 @@ class IndicatorCalc:
 
                 ema_values['result']['state'] = ema_state
 
+            if self.serialize_numpy == True:
+                ema_values['result']['short']['data'] = ema_values['result']['short']['data'].tolist()
+                ema_values['result']['long']['data'] = ema_values['result']['long']['data'].tolist()
+
         except Exception as e:
             logger.exception('Exception while calculating EMA.')
             logger.exception(e)
@@ -321,6 +328,10 @@ class IndicatorCalc:
 
             stoch_values['result']['state'] = stoch_state
 
+            if self.serialize_numpy == True:
+                stoch_values['result']['smoothk']['data'] = stoch_values['result']['smoothk']['data'].tolist()
+                stoch_values['result']['smoothd']['data'] = stoch_values['result']['smoothd']['data'].tolist()
+
         except Exception as e:
             logger.exception('Exception while calculating stochastic.')
             logger.exception(e)
@@ -344,18 +355,8 @@ class IndicatorCalc:
 
             sma_values['result']['current'] = results[-1]
 
-            """
-            if sma_values['result']['current'] > 50:
-                sma_state = 'positive'
-
-            elif sma_values['result']['current'] == 50:
-                sma_state = 'even'
-
-            else:
-                sma_state = 'negative'
-
-            sma_values['result']['state'] = sma_state
-            """
+            if self.serialize_numpy == True:
+                sma_values['result']['data'] = sma_values['result']['data'].tolist()
 
         except Exception as e:
             logger.exception('Exception while calculating SMA.')
@@ -386,6 +387,11 @@ class IndicatorCalc:
 
             macd_values['result']['histogram']['data'] = histogram
             macd_values['result']['histogram']['current'] = histogram[-1]
+
+            if self.serialize_numpy == True:
+                macd_values['result']['macd']['data'] = macd_values['result']['macd']['data'].tolist()
+                macd_values['result']['signal']['data'] = macd_values['result']['signal']['data'].tolist()
+                macd_values['result']['histogram']['data'] = macd_values['result']['histogram']['data'].tolist()
 
         except Exception as e:
             logger.exception('Exception while calculating MACD.')
@@ -446,6 +452,11 @@ class IndicatorCalc:
 
             bollinger_bands_values['result']['lower']['data'] = lower
             bollinger_bands_values['result']['lower']['current'] = lower[-1]
+
+            if self.serialize_numpy == True:
+                bollinger_bands_values['result']['upper']['data'] = bollinger_bands_values['result']['upper']['data'].tolist()
+                bollinger_bands_values['result']['middle']['data'] = bollinger_bands_values['result']['middle']['data'].tolist()
+                bollinger_bands_values['result']['lower']['data'] = bollinger_bands_values['result']['lower']['data'].tolist()
 
         except Exception as e:
             logger.exception('Exception while calculating Bollinger bands.')
