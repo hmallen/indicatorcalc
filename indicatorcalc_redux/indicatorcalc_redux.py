@@ -404,18 +404,20 @@ class IndicatorCalc:
 
 
     def volume(self, data, threshold):
-        volume_values = {'success': True, 'result': {'volume': None, 'reached': None}}
+        volume_values = {'success': True, 'result': {}}
 
         data_copy = data.copy()
 
         try:
+            volume_values['result']['threshold'] = threshold
+            
             volume_values['result']['volume'] = data_copy['volume'][-1]
 
-            if volume_values['result']['volume'] >= threshold:
-                volume_values['result']['reached'] = True
+            if volume_values['result']['volume'] > threshold:
+                volume_values['result']['state'] = 'above'
 
             else:
-                volume_values['result']['reached'] = False
+                volume_values['result']['state'] = 'below'
 
         except Exception as e:
             logger.exception('Exception while calculating volume.')
@@ -425,6 +427,32 @@ class IndicatorCalc:
 
         finally:
             return volume_values
+
+
+    def price(self, data, threshold):
+        price_values = {'success': True, 'result': {}}
+
+        data_copy = data.copy()
+
+        try:
+            price_values['result']['threshold'] = threshold
+
+            price_values['result']['high'] = data_copy['high'][-1]
+
+            if price_values['result']['high'] > threshold:
+                price_values['result']['state'] = 'above'
+
+            else:
+                price_values['result']['state'] = 'below'
+
+        except Exception as e:
+            logger.exception('Exception while calculating price.')
+            logger.exception(e)
+
+            price_values['success'] = False
+
+        finally:
+            return price_values
 
 
     def bollinger_bands(self, data, length, nbdevup, nbdevdown=None, price_input='close'):
