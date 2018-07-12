@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: indicatorcalc
-Version: 0.1a29
+Version: 0.1a30
 Summary: Centralized, TA-Lib based technical analysis indicator calculation from json market data.
 Home-page: https://github.com/hmallen/indicatorcalc
 Author: Hunter M. Allen
